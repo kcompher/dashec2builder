@@ -31,13 +31,13 @@ for tic in tickers.index:
 
 app.layout = html.Div([
 				html.H1('Portfolio Dashboard'),
-				dcc.Markdown(''' --- '''), 
+				dcc.Markdown(''' --- '''),
 				html.H1('Relative Returns Comparison'),
 				html.Div([html.H3('Enter a stock symbol:', style={'paddingRight': '30px'}),
 				dcc.Dropdown(
 						  id='my_ticker_symbol',
 						  options = options,
-						  value = ['SPY'], 
+						  value = ['SPY'],
 						  multi = True
 						  # style={'fontSize': 24, 'width': 75}
 				)
@@ -51,7 +51,7 @@ app.layout = html.Div([
 										end_date = datetime.today()
 					)
 
-				], style={'display':'inline-block'}), 
+				], style={'display':'inline-block'}),
 				html.Div([
 					html.Button(id='submit-button',
 								n_clicks = 0,
@@ -61,12 +61,12 @@ app.layout = html.Div([
 					)
 
 				], style={'display': 'inline-block'}),
-				 
+
 				dcc.Graph(id='my_graph',
 							figure={'data':[
 								{'x':[1,2], 'y':[3,1]}
 
-							], 'layout':go.Layout(title='Relative Stock Returns Comparison', 
+							], 'layout':go.Layout(title='Relative Stock Returns Comparison',
                                                             yaxis = {'title':'Returns', 'tickformat':".2%"}
                                          )}
 				),
@@ -86,7 +86,7 @@ app.layout = html.Div([
 											    name = 'SP500 YTD')
                                                 ],
                                         'layout':go.Layout(title='YTD Return vs S&P 500 YTD',
-                                        					barmode='group', 
+                                        					barmode='group',
                                                             xaxis = {'title':'Ticker'},
                                                             yaxis = {'title':'Returns', 'tickformat':".2%"}
                                          )}, style={'width': '50%', 'display':'inline-block'}
@@ -107,13 +107,13 @@ app.layout = html.Div([
 											    name = 'SP500 Total Return')
                                                 ],
                                         'layout':go.Layout(title='Total Return vs S&P 500',
-                                        					barmode='group', 
+                                        					barmode='group',
                                                             xaxis = {'title':'Ticker'},
                                                             yaxis = {'title':'Returns', 'tickformat':".2%"}
                                          )}, style={'width': '50%', 'display':'inline-block'}
                                         ),
-				dcc.Markdown(''' --- '''), 
-				
+				dcc.Markdown(''' --- '''),
+
 				# Cumulative Returns Over Time section
 				html.H1('Cumulative Returns per Position Over Time'),
 					dcc.Graph(id='crot1',
@@ -133,7 +133,7 @@ app.layout = html.Div([
 											    yaxis='y2')
 		                                        ],
                                         'layout':go.Layout(title='Gain / (Loss) and Total Return vs S&P 500',
-                                        					barmode='group', 
+                                        					barmode='group',
                                                             xaxis = {'title': 'Ticker'},
                                                             yaxis = {'title': 'Gain / (Loss) ($)'},
                                                             yaxis2 = {'title':'Ticker Return', 'overlaying':'y', 'side':'right', 'tickformat':".1%"},
@@ -158,12 +158,12 @@ app.layout = html.Div([
 											    go.Scatter(
     											x = data['Ticker #'],
 											    y = data['Cum SP Returns'],
-											    mode = 'lines+markers',	
+											    mode = 'lines+markers',
 											    name = 'Cum SP500 Returns'
 											    )
 		                                        ],
                                         'layout':go.Layout(title='Cumulative Investment Returns',
-                                        					barmode='group', 
+                                        					barmode='group',
                                                             xaxis = {'title': 'Ticker'},
                                                             yaxis = {'title': 'Returns'},
                                                             legend = {'x':'1', 'y':'1'}
@@ -191,7 +191,7 @@ app.layout = html.Div([
 											    )
 		                                        ],
                                         'layout':go.Layout(title='Total Cumulative Investments | ROI Multiple, Over Time',
-                                        					barmode='group', 
+                                        					barmode='group',
                                                             xaxis = {'title': 'Ticker'},
                                                             yaxis = {'title': 'Returns'},
                                                             yaxis2 = {'title':'Cum ROI Mult', 'overlaying':'y', 'side':'right'},
@@ -216,13 +216,14 @@ app.layout = html.Div([
     											)
 		                                        ],
                                         'layout':go.Layout(title='Adj Close % off of High Since Purchased',
-                                        					barmode='group', 
+                                        					barmode='group',
                                                             xaxis = {'title': 'Ticker'},
                                                             yaxis = {'title': '% Below High Since Purchased', 'tickformat':'.2%'},
-                                                            legend = {'x':'0.8', 'y':'1.2'}
+#                                                            legend = {'x':'0.8', 'y':'1.2'}
+                                                            legend = {'x':'2', 'y':'-3'}
                                          )}, style={'width': '100%'}
                                         ),
-				dcc.Markdown(''' --- ''')	
+				dcc.Markdown(''' --- ''')
 
 ])
 
@@ -241,7 +242,7 @@ def update_graph(n_clicks, stock_ticker, start_date, end_date):
 	for tic in stock_ticker:
 		df = web.DataReader(tic, 'iex', start, end)
 		traces.append({'x':df.index, 'y':(df['close']/df['close'].iloc[0])-1, 'name': tic})
-	
+
 	fig = {
 		'data': traces,
 		'layout': {'title':stock_ticker}
@@ -249,4 +250,4 @@ def update_graph(n_clicks, stock_ticker, start_date, end_date):
 	return fig
 
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(debug=True, port=8085, host='0.0.0.0')
